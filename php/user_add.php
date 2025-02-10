@@ -79,11 +79,25 @@
 </div>
 
     <?php
+        $servername = "localhost";
+        $username = "root";
+        $password = "root";
+        $dbname = "gestion_collectes";
+        
+        $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+        echo "<script>console.log('Connected successfully');</script>";
+
         if (array_key_exists('add_volunteer', $_POST)) {
             $name = $_POST["nom"];
             $email = $_POST["email"];
             $role = $_POST["role"];
-            echo "<script>console.log('this is a description: " . $name . ' ' . $email . ' ' . $role . " ');</script>";
+            $mdp = $_POST["mot_de_passe"];
+            echo "<script>console.log('this is a description: " . $name . ' ' . $email . ' ' . $mdp . ' ' . $role . " ');</script>";
+            $new_volunteer = "
+                INSERT INTO benevoles (nom, email, mot_de_passe, role)
+                VALUES ('". $name ."', '". $email ."', '". $mdp ."', '". $role ."')
+            ";
+            $conn->exec($new_volunteer);
         }
     ?>
 
