@@ -68,7 +68,7 @@
                 </div>
 
                 <div class="mt-6">
-                    <button type="submit"
+                    <button type="submit" name="add_volunteer"
                             class="w-full bg-cyan-200 hover:bg-cyan-600 text-white py-3 rounded-lg shadow-md font-semibold">
                         Ajouter le bénévole
                     </button>
@@ -77,6 +77,15 @@
         </div>
     </div>
 </div>
+
+    <?php
+        if (array_key_exists('add_volunteer', $_POST)) {
+            $name = $_POST["nom"];
+            $email = $_POST["email"];
+            $role = $_POST["role"];
+            echo "<script>console.log('this is a description: " . $name . ' ' . $email . ' ' . $role . " ');</script>";
+        }
+    ?>
 
 </body>
 </html>
