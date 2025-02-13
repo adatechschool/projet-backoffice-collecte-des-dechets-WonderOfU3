@@ -2,15 +2,25 @@
     require 'config.php';
     try {
         $get_info = $pdo->query("
-            SELECT nom, email, role, id
+            SELECT nom, email, role, total, id
             FROM benevoles;
         ");
         $volunteers = $get_info->fetchAll();
+        $pdo->exec("
+            UPDATE benevoles b
+            JOIN (
+                SELECT c.id_benevole, COALESCE(SUM(dc.quantite_kg), 0) AS total
+                FROM collectes c
+                LEFT JOIN dechets_collectes dc ON c.id = dc.id_collecte
+                GROUP BY c.id_benevole
+            ) AS subquery ON b.id = subquery.id_benevole
+            SET b.total = subquery.total;
+            ");
     } catch (PDOException $e) {
         echo "<script>console.log('Erreur de base de données : " . $e->getMessage() . " ');</script>";
         exit;
     }
-;?>
+?>
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -59,6 +69,7 @@
                     <th class="py-3 px-4 text-left">Nom</th>
                     <th class="py-3 px-4 text-left">Email</th>
                     <th class="py-3 px-4 text-left">Rôle</th>
+                    <th class="py-3 px-4 text-left">Total</th>
                     <th class="py-3 px-4 text-left">Actions</th>
                 </tr>
                 </thead>
@@ -68,6 +79,7 @@
                         <td class="py-3 px-4"><?= htmlspecialchars($volunteer["nom"]) ?></td>
                         <td class="py-3 px-4"><?= htmlspecialchars($volunteer["email"]) ?></td>
                         <td class="py-3 px-4"><?= htmlspecialchars($volunteer["role"]) ?></td>
+                        <td class="py-3 px-4"><?= htmlspecialchars($volunteer["total"]) ?></td>
                         <td class="py-3 px-4 flex space-x-2">
                             <a href="volunteer_edit.php?id=<?= $volunteer["id"] ?>"
                                class="bg-cyan-200 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
